@@ -1,12 +1,13 @@
 const contacts = require("../models/contacts");
 
-const { HttpError, ctrlWrapper } = require("../decorators");
+const HttpError  = require("../helpers/HttpError");
+const ctrlWrapper = require("../decorators/ctrlWrapper")
 
 const { addSchema, addUpdateSchema } = require("../schemas/contacts-shemas");
 
 const getAll = async (req, res, next) => {
   try {
-    const result = await contacts.getAll();
+    const result = await contacts.listContacts();
     res.json(result);
   } catch (error) {
     next(error);
@@ -14,13 +15,16 @@ const getAll = async (req, res, next) => {
 };
 
 const getById = async (req, res, next) => {
+  const { contactId } = req.params;  
+  console.log(req.params)
+  console.log(contactId)
   try {
-    const { id } = req.params;
-    const result = await contacts.getById(id);
+    const result = await contacts.getContactById(contactId);
+    console.log(contactId);
     if (!result) {
-      throw HttpError(404, "Not found");
-    }
-    res.json(result);
+      throw new HttpError(404, `Contact with id - ${contactId} not found`)
+    };
+    res.json({result});
   } catch (error) {
     next(error);
   }
@@ -32,7 +36,7 @@ const add = async (req, res, next) => {
     if (error) {
       throw HttpError(400, error.message);
     }
-    const result = await contacts.add(req.body);
+    const result = await contacts.addContact(req.body);
     res.status(201).json(result);
   } catch (error) {
     next(error);
@@ -60,12 +64,10 @@ const updateById = async (req, res, next) => {
 const deleteById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await contacts.deleteById(id);
+    const result = await contacts.findByIdAndRemove(id);
     if (!result) {
-      throw HttpError(404, "Not found");
+      throw new HttpError(404, `Contact with id - ${id} not found`);
     }
-
-    // res.status(204).send()
     res.json({
       message: "Delete success",
     });
@@ -81,3 +83,5 @@ module.exports = {
   updateById: ctrlWrapper(updateById),
   deleteById: ctrlWrapper(deleteById),
 };
+
+// git push origin hw02-express

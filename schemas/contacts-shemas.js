@@ -1,16 +1,18 @@
 const Joi = require("joi");
 
 const addSchema = Joi.object({
-    title: Joi.string().required(),
-    author: Joi.string().required(),
-})
+  name: Joi.string().required(),
+  email: Joi.string().required(),
+  phone: Joi.string().required(),
+});
 
 const addUpdateSchema = Joi.object({
-    title: Joi.string(),
-    author: Joi.string(),
-})
+   name: Joi.string().required(),
+  email: Joi.string().required(),
+  phone: Joi.string().required(),
+});
 
 module.exports = {
-    addSchema,
-    addUpdateSchema,
-}
+  addSchema,
+  addUpdateSchema,
+};

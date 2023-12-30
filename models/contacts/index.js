@@ -3,7 +3,9 @@ const path = require("path");
 const { nanoid } = require("nanoid");
 const nanoId = nanoid()
 
-const contactsPath = path.join(__dirname, "models", "contacts.json");
+const contactsPath = path.join("models", "contacts", "contacts.json");
+
+// const updateContact = movies => fs.writeFile(moviesPath, JSON.stringify(movies, null, 2));
 
 async function listContacts() {
   const data = await fs.readFile(contactsPath);
@@ -13,7 +15,7 @@ async function listContacts() {
 async function getContactById(id) {
   const stringId = String(id);
   const contacts = await listContacts();
-  const result = contacts.find((item) => item.id === stringId);
+  const result = contacts.find(item => item.id === stringId);
   return result || null;
 }
 
