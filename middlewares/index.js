@@ -1,5 +1,1 @@
-const validateBody = require("./validateBody");
-
-module.exports = {
-    validateBody,
-}
+export {default as isEmptyBody} from "./isEmptyBody.js";
