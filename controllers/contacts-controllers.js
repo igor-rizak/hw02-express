@@ -1,9 +1,9 @@
-const contacts = require("../models/contacts");
+import contacts from "../models/contacts/index.js";
+import HttpError  from "../helpers/HttpError.js";
+import ctrlWrapper from "../decorators/ctrlWrapper.js";
 
-const HttpError  = require("../helpers/HttpError");
-const ctrlWrapper = require("../decorators/ctrlWrapper")
+import { contactsAddSchema, contactsUpdateScheme } from "../schemas/contacts-shemas.js";
 
-const { addSchema, addUpdateSchema } = require("../schemas/contacts-shemas");
 
 const getAll = async (req, res, next) => {
   try {
@@ -15,28 +15,32 @@ const getAll = async (req, res, next) => {
 };
 
 const getById = async (req, res, next) => {
-  const { contactId } = req.params;  
-  console.log(req.params)
-  console.log(contactId)
+  const { id } = req.params;  
   try {
-    const result = await contacts.getContactById(contactId);
-    console.log(contactId);
+    const result = await contacts.getContactById(id);
     if (!result) {
-      throw new HttpError(404, `Contact with id - ${contactId} not found`)
+      throw HttpError(404, `"message": "Not found"`)
     };
-    res.json({result});
+    res.json(result);
   } catch (error) {
     next(error);
   }
 };
 
+// const add = async (req, res) => {
+//     const result = await contacts.addContact(req.body);
+//     res.status(201).json(result)
+// }
+
+
 const add = async (req, res, next) => {
-  try {
-    const { error } = addSchema.validate(req.body);
-    if (error) {
+  const result = await contacts.addContact(req.body);
+    try {
+      const { error } = contactsAddSchema.validate(req.body);
+      if (error) {
       throw HttpError(400, error.message);
     }
-    const result = await contacts.addContact(req.body);
+    
     res.status(201).json(result);
   } catch (error) {
     next(error);
@@ -44,14 +48,13 @@ const add = async (req, res, next) => {
 };
 
 const updateById = async (req, res, next) => {
-  try {
-    const { error } = addUpdateSchema.validate(req.body);
+    try {
+        const { error } = contactsUpdateScheme.validate(req.body);
     if (error) {
       throw HttpError(400, error.message);
     }
-
     const { id } = req.params;
-    const result = await contacts.updateById(id, req.body);
+    const result = await contacts.updateContactById(id, req.body);
     if (!result) {
       throw HttpError(404, "Not found");
     }
@@ -64,7 +67,7 @@ const updateById = async (req, res, next) => {
 const deleteById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const result = await contacts.findByIdAndRemove(id);
+    const result = await contacts.removeContact(id);
     if (!result) {
       throw new HttpError(404, `Contact with id - ${id} not found`);
     }
@@ -76,7 +79,7 @@ const deleteById = async (req, res, next) => {
   }
 };
 
-module.exports = {
+export default {
   getAll: ctrlWrapper(getAll),
   getById: ctrlWrapper(getById),
   add: ctrlWrapper(add),
@@ -85,3 +88,5 @@ module.exports = {
 };
 
 // git push origin hw02-express
+
+// npm run start:dev

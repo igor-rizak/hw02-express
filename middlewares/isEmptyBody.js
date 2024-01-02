@@ -1,6 +1,6 @@
-const HttpError = require("../helpers/HttpError");
+import  HttpError  from "../helpers/HttpError.js";
 
-const isEmptyBody = (req, res, next) => {
+const isEmptyBody = (req, res, next)=> {
     const {length} = Object.keys(req.body);
     if(!length) {
         return next(HttpError(400, "Body must have fields"));
@@ -8,4 +8,4 @@ const isEmptyBody = (req, res, next) => {
     next();
 }
 
-module.export = isEmptyBody;
+export default isEmptyBody;

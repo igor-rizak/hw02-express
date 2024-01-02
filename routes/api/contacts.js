@@ -1,24 +1,23 @@
-const express = require('express');
+import express from "express";
 
-// const isEmptyBody = require("../../middlewares/isEmptyBody");
-const validation = require("../../middlewares/validation")
-const ctrlWrapper = require("../../decorators/ctrlWrapper.js")
-const ctrl = require("../../controllers/contacts-controllers");
-const addSchema = require("../../schemas/contacts-shemas.js");
+import contactsController from "../../controllers/contacts-controllers.js";
 
-const validationMiddleware = validation(addSchema);
+import { isEmptyBody } from "../../middlewares/index.js";
+
+import  validateBody  from "../../decorators/validateBody.js";
+
+import {contactsAddSchema, contactsUpdateScheme} from "../../schemas/contacts-shemas.js"
 
 const router = express.Router();
 
-router.get("/", ctrl.getAll);
+router.get("/", contactsController.getAll);
 
-router.get("/:contactId", ctrlWrapper(ctrl.getById));
+router.get("/:id", contactsController.getById);
 
-router.post('/', validationMiddleware, ctrlWrapper(ctrl.add));
+router.post("/", isEmptyBody, validateBody(contactsAddSchema), contactsController.add);
 
-// router.put('/:contactId', isEmptyBody, ctrl.updateById);
+router.put("/:id", isEmptyBody, validateBody(contactsUpdateScheme), contactsController.updateById);
 
-router.delete('/:contactId', ctrlWrapper(ctrl.deleteById));
+router.delete("/:id", contactsController.deleteById)
 
-
-module.exports = router;
+export default router;
