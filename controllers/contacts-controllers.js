@@ -25,30 +25,19 @@ const getById = async (req, res, next) => {
 };
 
 const add = async (req, res, next) => {
-  const result = await contacts.addContact(req.body);
     try {
-      const { error } = req.body;
-      if (error) {
-      throw HttpError(400, error.message);
+      const result = await contacts.addContact(req.body);
+      res.status(201).json(result);
     }
-    
-    res.status(201).json(result);
-  } catch (error) {
+    catch (error) {
     next(error);
   }
 };
 
 const updateById = async (req, res, next) => {
     try {
-        const { error } = req.body;
-    if (error) {
-      throw HttpError(400, error.message);
-    }
     const { id } = req.params;
     const result = await contacts.updateContactById(id, req.body);
-    if (!result) {
-      throw HttpError(404, "Not found");
-    }
     res.json(result);
   } catch (error) {
     next(error);
