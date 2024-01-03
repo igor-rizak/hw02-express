@@ -22,4 +22,5 @@ contactRouter.patch("/:id/favorite", isValidId, isEmptyBody, validateBody(contac
 
 contactRouter.delete("/:id", isValidId, contactsController.deleteById)
 
+
 export default contactRouter;
