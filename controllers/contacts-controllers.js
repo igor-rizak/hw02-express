@@ -2,9 +2,6 @@ import contacts from "../models/contacts/index.js";
 import HttpError  from "../helpers/HttpError.js";
 import ctrlWrapper from "../decorators/ctrlWrapper.js";
 
-import { contactsAddSchema, contactsUpdateScheme } from "../schemas/contacts-shemas.js";
-
-
 const getAll = async (req, res, next) => {
   try {
     const result = await contacts.listContacts();
@@ -27,16 +24,10 @@ const getById = async (req, res, next) => {
   }
 };
 
-// const add = async (req, res) => {
-//     const result = await contacts.addContact(req.body);
-//     res.status(201).json(result)
-// }
-
-
 const add = async (req, res, next) => {
   const result = await contacts.addContact(req.body);
     try {
-      const { error } = contactsAddSchema.validate(req.body);
+      const { error } = req.body;
       if (error) {
       throw HttpError(400, error.message);
     }
@@ -49,7 +40,7 @@ const add = async (req, res, next) => {
 
 const updateById = async (req, res, next) => {
     try {
-        const { error } = contactsUpdateScheme.validate(req.body);
+        const { error } = req.body;
     if (error) {
       throw HttpError(400, error.message);
     }
@@ -69,7 +60,7 @@ const deleteById = async (req, res, next) => {
     const { id } = req.params;
     const result = await contacts.removeContact(id);
     if (!result) {
-      throw new HttpError(404, `Contact with id - ${id} not found`);
+      throw HttpError(404, `Contact with id - ${id} not found`);
     }
     res.json({
       message: "Delete success",
@@ -87,6 +78,4 @@ export default {
   deleteById: ctrlWrapper(deleteById),
 };
 
-// git push origin hw02-express
-
-// npm run start:dev
+//npm run start:dev
