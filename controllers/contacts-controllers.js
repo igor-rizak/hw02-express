@@ -12,7 +12,7 @@ const getById = async (req, res) => {
     const { id } = req.params;
     const result = await Contacts.findById(id);
     if (!result) {
-        throw HttpError(404, `Movie with id=${id} not found`);
+        throw HttpError(404, `Contact with id=${id} not found`);
     }
     res.json(result);
 }
@@ -26,7 +26,7 @@ const updateById = async (req, res) => {
     const { id } = req.params;
     const result = await Contacts.findByIdAndUpdate(id, req.body);
     if (!result) {
-        throw HttpError(404, `Movie with id=${id} not found`);
+        throw HttpError(404, `Contact with id=${id} not found`);
     }
     res.json(result);
 }
@@ -35,7 +35,7 @@ const deleteById = async (req, res) => {
     const { id } = req.params;
     const result = await Contacts.findByIdAndDelete(id);
     if (!result) {
-        throw HttpError(404, `Movie with id=${id} not found`);
+        throw HttpError(404, `Contact with id=${id} not found`);
   }
       res.json({
         message: "Delete success"
