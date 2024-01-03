@@ -1,82 +1,51 @@
-import contacts from "../models/contacts/index.js";
-import HttpError  from "../helpers/HttpError.js";
-import ctrlWrapper from "../decorators/ctrlWrapper.js";
+import Contacts from "../models/contacts.js";
 
-const getAll = async (req, res, next) => {
-  try {
-    const result = await contacts.listContacts();
+import { HttpError } from "../helpers/index.js";
+import { ctrlWrapper } from "../decorators/index.js";
+
+const getAll = async (req, res) => {
+    const result = await Contacts.find({}, "-createdAt -updatedAt");
     res.json(result);
-  } catch (error) {
-    next(error);
-  }
-  
-};
+}
 
-const getById = async (req, res, next) => {
-  const { id } = req.params;  
-  try {
-    const result = await contacts.getContactById(id);
-    if (!result) {
-      throw HttpError(404, `"message": "Not found"`)
-    };
-    res.json(result);
-  } catch (error) {
-    next(error);
-  }
-};
-
-const add = async (req, res, next) => {
-  const result = await contacts.addContact(req.body);
-    try {
-      const { error } = req.body;
-      if (error) {
-      throw HttpError(400, error.message);
-    }
-    
-    res.status(201).json(result);
-  } catch (error) {
-    next(error);
-  }
-};
-
-const updateById = async (req, res, next) => {
-    try {
-        const { error } = req.body;
-    if (error) {
-      throw HttpError(400, error.message);
-    }
+const getById = async (req, res) => {
     const { id } = req.params;
-    const result = await contacts.updateContactById(id, req.body);
+    const result = await Contacts.findById(id);
     if (!result) {
-      throw HttpError(404, "Not found");
+        throw HttpError(404, `Movie with id=${id} not found`);
     }
     res.json(result);
-  } catch (error) {
-    next(error);
-  }
-};
+}
 
-const deleteById = async (req, res, next) => {
-  try {
+const add = async (req, res) => {
+    const result = await Contacts.create(req.body);
+    res.status(201).json(result)
+}
+
+const updateById = async (req, res) => {
     const { id } = req.params;
-    const result = await contacts.removeContact(id);
+    const result = await Contacts.findByIdAndUpdate(id, req.body);
     if (!result) {
-      throw HttpError(404, `Contact with id - ${id} not found`);
+        throw HttpError(404, `Movie with id=${id} not found`);
     }
-    res.json({
-      message: "Delete success",
-    });
-  } catch (error) {
-    next(error);
+    res.json(result);
+}
+
+const deleteById = async (req, res) => {
+    const { id } = req.params;
+    const result = await Contacts.findByIdAndDelete(id);
+    if (!result) {
+        throw HttpError(404, `Movie with id=${id} not found`);
   }
-};
+      res.json({
+        message: "Delete success"
+    })
+}
 
 export default {
-  getAll: ctrlWrapper(getAll),
-  getById: ctrlWrapper(getById),
-  add: ctrlWrapper(add),
-  updateById: ctrlWrapper(updateById),
-  deleteById: ctrlWrapper(deleteById),
-};
-
-//npm run start:dev
+    getAll: ctrlWrapper(getAll),
+    getById: ctrlWrapper(getById),
+    add: ctrlWrapper(add),
+    updateById: ctrlWrapper(updateById),
+    deleteById: ctrlWrapper(deleteById),
+}

@@ -1,19 +1,53 @@
-// const fs = require('fs/promises')
+import { Schema, model } from "mongoose";
 
-const listContacts = async () => {}
+import Joi from "joi";
 
-const getContactById = async (contactId) => {}
+import {handleSaveError, addUpdateSettings} from "./hooks.js";
 
-const removeContact = async (contactId) => {}
+const contactSchema = new Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    email:  {
+        type: String,
+        required: true,
+    },
+    phone: {
+        type: Number,
+        required: true,
+  },
+        favorite: {
+        type: Boolean,
+        default: false,
+    },
 
-const addContact = async (body) => {}
+}, {versionKey: false, timestamps: true});
 
-const updateContact = async (contactId, body) => {}
+contactSchema.post("save", handleSaveError);
 
-module.exports = {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
-}
+contactSchema.pre("findOneAndUpdate", addUpdateSettings);
+
+contactSchema.post("findOneAndUpdate", handleSaveError);
+
+export const contactAddSchema = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string().required(),
+  phone: Joi.string().required(),
+  favorite: Joi.boolean(),
+});
+
+export const contactUpdateSchema = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string().required(),
+  phone: Joi.string().required(),
+  favorite: Joi.boolean(),
+});
+
+export const contactUpdateFavoriteSchema = Joi.object({
+  favorite: Joi.boolean().required()
+});
+
+const Contact = model("movie", contactSchema);
+
+export default Contact;
