@@ -15,8 +15,3 @@ mongoose.connect(DB_HOST)
   })
 
 // npm run start:dev
-
-
-// {
-//     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1YWQxNjkwNjhiMWMwM2U3ODVmNzVhYyIsImlhdCI6MTcwNTg0MjMzOCwiZXhwIjoxNzA1OTI1MTM4fQ.N-vE1xj6QmJyT4C1ocQEkfE42BkOFgq3_RJ28lXKdZw"
-// }
