@@ -76,5 +76,3 @@ export default {
     logout: ctrlWrapper(logout),
 }
 
-
-// "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1YWQwNGU3NzQwNTJkODVhZmRiY2ZhMiIsImlhdCI6MTcwNTgzNzgzNiwiZXhwIjoxNzA1OTIwNjM2fQ.ZmryKRP_rssl_EFZ-tjFcF_YDFaNm5ZPR6qr4Mq5GbE"
