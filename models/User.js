@@ -6,24 +6,21 @@ import {handleSaveError, addUpdateSettings} from "./hooks.js";
 const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
 const userSchema = new Schema({
-    username: {
-        type: String,
-        required: true,
-    },
-    email: {
-        type: String,
-        match: emailRegexp,
-        unique: true,
-        required: true,
-    },
-    password: {
-        type: String,
-        required: true,
-        minlength: 6,
-    },
-    token: {
-        type: String,
-    }
+  password: {
+    type: String,
+    required: [true, 'Set password for user'],
+  },
+  email: {
+    type: String,
+    required: [true, 'Email is required'],
+    unique: true,
+  },
+  subscription: {
+    type: String,
+    enum: ["starter", "pro", "business"],
+    default: "starter"
+  },
+  token: String
 }, {versionKey: false, timestamps: true});
 
 userSchema.post("save", handleSaveError);

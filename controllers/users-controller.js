@@ -4,12 +4,12 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
 import { HttpError } from "../helpers/index.js";
-
 import { ctrlWrapper } from "../decorators/index.js";
 
-const {JWT_SECRET} = process.env;
+const { JWT_SECRET } = process.env;
+console.log(JWT_SECRET)
 
-const signup = async(req, res)=> {
+const register = async(req, res)=> {
     const {email, password} = req.body;
     const user = await User.findOne({email});
     if(user) {
@@ -26,24 +26,24 @@ const signup = async(req, res)=> {
     })
 }
 
-const signin = async(req, res)=> {
+const login = async(req, res)=> {
     const {email, password} = req.body;
-    const user = await User.findOne({email});
+    const user = await User.findOne({ email });
+    console.log(user)
     if(!user) {
         throw HttpError(401, "Email or password invalid");
     }
-
+    
     const passwordCompare = await bcrypt.compare(password, user.password);
     if(!passwordCompare) {
         throw HttpError(401, "Email or password invalid");
     }
-    
+
     const {_id: id} = user;
     const payload = {
         id
     };
-
-    const token = jwt.sign(payload, JWT_SECRET, {expiresIn: "23h"});
+       const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "23h" });
     await User.findByIdAndUpdate(id, {token});
 
     res.json({
@@ -60,7 +60,7 @@ const getCurrent = async(req, res)=> {
     })
 }
 
-const signout = async(req, res)=> {
+const logout = async(req, res)=> {
     const {_id} = req.user;
     await User.findByIdAndUpdate(_id, {token: ""});
 
@@ -70,8 +70,11 @@ const signout = async(req, res)=> {
 }
 
 export default {
-    signup: ctrlWrapper(signup),
-    signin: ctrlWrapper(signin),
+    register: ctrlWrapper(register),
+    login: ctrlWrapper(login),
     getCurrent: ctrlWrapper(getCurrent),
-    signout: ctrlWrapper(signout),
+    logout: ctrlWrapper(logout),
 }
+
+
+// "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1YWQwNGU3NzQwNTJkODVhZmRiY2ZhMiIsImlhdCI6MTcwNTgzNzgzNiwiZXhwIjoxNzA1OTIwNjM2fQ.ZmryKRP_rssl_EFZ-tjFcF_YDFaNm5ZPR6qr4Mq5GbE"

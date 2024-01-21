@@ -14,4 +14,8 @@ mongoose.connect(DB_HOST)
     process.exit(1);
   })
 
-  // npm run start:dev
+// npm run start:dev
+  
+// {
+//     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1YWQxMGE0NWIxZTNmYzI2ZjZmZjMxNyIsImlhdCI6MTcwNTg0MDg5NiwiZXhwIjoxNzA1OTIzNjk2fQ.WrAAXjufcpI9yc9Ku3AH_pq4u6OOYW9P3FG2Z8HMndI"
+// }
