@@ -18,4 +18,6 @@ usersRouter.get("/current", authenticate, authController.getCurrent);
 
 usersRouter.post("/logout", authenticate, authController.logout);
 
+// usersRouter.post("/avatars")
+
 export default usersRouter;

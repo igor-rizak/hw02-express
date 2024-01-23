@@ -1,8 +1,13 @@
+import fs from "fs/promises";
+import path from "path";
+
 import Contact from "../models/contacts.js";
 
 import { HttpError } from "../helpers/index.js";
 
 import { ctrlWrapper } from "../decorators/index.js";
+
+const avatarsPath = path.resolve("public", "avatars");
 
 const getAll = async (req, res) => {
     const {_id: owner} = req.user;
@@ -16,7 +21,7 @@ const getAll = async (req, res) => {
 const getById = async (req, res) => {
     const { id: _id } = req.params;
     const {_id: owner} = req.user;
-    const result = await User.findOne({_id, owner});
+    const result = await Contact.findOne({_id, owner});
     if (!result) {
         throw HttpError(404, `id=${id} is not defined`);
     }
@@ -26,7 +31,11 @@ const getById = async (req, res) => {
 
 const add = async (req, res) => {
     const {_id: owner} = req.user;
-    const result = await Contact.create({...req.body, owner});
+    const {path: oldPath, filename} = req.file;
+    const newPath = path.join(postersPath, filename);
+    await fs.rename(oldPath, newPath);
+    const poster = path.join("avatarsPath", filename);
+    const result = await Contact.create({...req.body, poster, owner});
 
     res.status(201).json(result)
 }
