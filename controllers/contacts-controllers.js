@@ -16,7 +16,7 @@ const getAll = async (req, res) => {
 const getById = async (req, res) => {
     const { id: _id } = req.params;
     const {_id: owner} = req.user;
-    const result = await User.findOne({_id, owner});
+    const result = await Contact.findOne({_id, owner});
     if (!result) {
         throw HttpError(404, `id=${id} is not defined`);
     }
