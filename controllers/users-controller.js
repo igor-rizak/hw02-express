@@ -1,5 +1,9 @@
+import fs from "fs/promises";
+import path from "path";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import gravatar from "gravatar";
+
 
 import User from "../models/User.js";
 
@@ -14,9 +18,13 @@ const register = async (req, res) => {
   if (user) {
     throw HttpError(409, "Email already in use");
   }
-
+  const url = gravatar.url(email, { s: "250" });
   const hashPassword = await bcrypt.hash(password, 10);
-  const newUser = await User.create({ ...req.body, password: hashPassword });
+  const newUser = await User.create({
+    ...req.body,
+    password: hashPassword,
+    avatarURL: url,
+  });
 
   res.json({
     username: newUser.username,
@@ -27,7 +35,6 @@ const register = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  console.log(user);
   if (!user) {
     throw HttpError(401, "Email or password invalid");
   }
@@ -73,9 +80,33 @@ const logout = async (req, res) => {
   });
 };
 
+const updateAvatar = async (req, res) => {
+  if (!req.file) {
+    throw HttpError(400, 'Avatar file is required');
+  }
+
+  const { _id: owner } = req.user;
+  const { path: oldPath, filename } = req.file;
+  const newPath = path.join(avatarsPath, filename);
+  await fs.rename(oldPath, newPath);
+  const avatarURL = newPath;
+  const result = await User.findOneAndUpdate({ _id, owner }, { avatarURL });
+  if (!result) {
+    throw HttpError(401, "Not authorized");
+  }
+
+  res.json({
+    ResponseBody: {
+      status: 200,
+      avatarURL: avatarURL,
+    },
+  });
+};
+
 export default {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
+  updateAvatar: ctrlWrapper(updateAvatar),
 };

@@ -1,13 +1,13 @@
 import fs from "fs/promises";
 import path from "path";
+import gravatar from "gravatar";
 
 import Contact from "../models/contacts.js";
-
 import { HttpError } from "../helpers/index.js";
-
 import { ctrlWrapper } from "../decorators/index.js";
 
 const avatarsPath = path.resolve("public", "avatars");
+
 
 const getAll = async (req, res) => {
     const {_id: owner} = req.user;
@@ -31,14 +31,15 @@ const getById = async (req, res) => {
 
 const add = async (req, res) => {
     const {_id: owner} = req.user;
-    const {path: oldPath, filename} = req.file;
-    const newPath = path.join(postersPath, filename);
+    const { path: oldPath, filename } = req.file;
+    const newPath = path.join(avatarsPath, filename);
     await fs.rename(oldPath, newPath);
-    const poster = path.join("avatarsPath", filename);
-    const result = await Contact.create({...req.body, poster, owner});
+    const avatar = path.join("avatar", filename);
+    const result = await Contact.create({...req.body, avatar, owner});
 
     res.status(201).json(result)
 }
+
 
 const updateById = async (req, res) => {
     const { id: _id } = req.params;
@@ -53,8 +54,8 @@ const updateById = async (req, res) => {
 
 const deleteById = async (req, res) => {
     const { id: _id } = req.params;
-    const {_id: owner} = req.user;
-    const result = await Contact.findOneAndDelete({_id, owner});
+    const { _id: owner } = req.user;
+    const result = await Contact.findOneAndDelete({ _id, owner });
     if (!result) {
         throw HttpError(404, `id=${id} is not defined`);
     }
@@ -62,7 +63,8 @@ const deleteById = async (req, res) => {
     res.json({
         message: "Delete success"
     })
-}
+};
+
 
 export default {
     getAll: ctrlWrapper(getAll),
