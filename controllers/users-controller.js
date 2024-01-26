@@ -3,6 +3,7 @@ import path from "path";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import gravatar from "gravatar";
+import Jimp from "jimp";
 
 
 import User from "../models/User.js";
@@ -81,25 +82,38 @@ const logout = async (req, res) => {
 };
 
 const updateAvatar = async (req, res) => {
+  const avatarsDir = path.join(process.cwd(), 'public', 'avatars');
+  const { _id } = req.user;
+
   if (!req.file) {
-    throw HttpError(400, 'Avatar file is required');
+    throw new Error('Avatar file is required');
   }
 
-  const { _id: owner } = req.user;
-  const { path: oldPath, filename } = req.file;
-  const newPath = path.join(avatarsPath, filename);
-  await fs.rename(oldPath, newPath);
-  const avatarURL = newPath;
-  const result = await User.findOneAndUpdate({ _id, owner }, { avatarURL });
-  if (!result) {
-    throw HttpError(401, "Not authorized");
-  }
+  const resize = async fileDir => {
+    const image = await Jimp.read(fileDir);
+    image
+      .resize(250, Jimp.AUTO)
+      .cover(250, 250, Jimp.VERTICAL_ALIGN_MIDDLE)
+      .write(fileDir);
+  };
 
-  res.json({
-    ResponseBody: {
-      status: 200,
-      avatarURL: avatarURL,
-    },
+  const { path: tempURL, filename } = req.file;
+
+  await resize(tempURL);
+  const resultURL = path.join(avatarsDir, filename);
+
+  await fs.rename(tempURL, resultURL);
+  const avatarURL = path.join('avatars', filename);
+  console.log(avatarURL)
+ 
+  await User.findByIdAndUpdate(
+    _id,
+    { avatarURL, avatarImage: filename },
+    { new: true }
+  );
+
+  res.status(200).json({
+    avatarURL,
   });
 };
 

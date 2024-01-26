@@ -1,6 +1,5 @@
 import fs from "fs/promises";
 import path from "path";
-import gravatar from "gravatar";
 
 import Contact from "../models/contacts.js";
 import { HttpError } from "../helpers/index.js";

@@ -15,22 +15,13 @@ const storage = multer.diskStorage({
 });
 
 const limits = {
-    fileSize: 1024 * 1024 * 5,
+    fileSize: 1024 * 1024 * 10,
 };
 
-const fileFilter = (req, file, callback)=> {
-    const extention = req.originalname.split(".").pop();
-    if(extention === "exe") {
-        return callback(HttpError(400, ".exe not valid extention"));
-    }
-    
-    callback(null, true);
-}
 
 const upload = multer({
     storage,
     limits,
-    fileFilter,
 })
 
 export default upload;
