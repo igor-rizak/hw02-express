@@ -33,24 +33,30 @@ const register = async (req, res) => {
   });
 };
 
-const login = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user) {
-    throw HttpError(401, "Email or password invalid");
-  }
+const login = async(req, res)=> {
+    const {email, password} = req.body;
+    const user = await User.findOne({email});
+    if(!user) {
+        throw HttpError(401, "Email or password invalid");
+    }
 
-  const passwordCompare = await bcrypt.compare(password, user.password);
-  if (!passwordCompare) {
-    throw HttpError(401, "Email or password invalid");
-  }
+    if(!user.verify) {
+        throw HttpError(401, "Email not verify");
+    }
 
-  const { _id: id } = user;
-  const payload = {
-    id,
-  };
-  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "23h" });
-  await User.findByIdAndUpdate(_id, { token });
+    const passwordCompare = await bcrypt.compare(password, user.password);
+    if(!passwordCompare) {
+        throw HttpError(401, "Email or password invalid");
+    }
+
+    const {_id: id} = user;
+    const payload = {
+        id
+    };
+
+    const token = jwt.sign(payload, JWT_SECRET, {expiresIn: "23h"});
+    await User.findByIdAndUpdate(id, {token});
+
 
   res.json({
     ResponseBody: {
