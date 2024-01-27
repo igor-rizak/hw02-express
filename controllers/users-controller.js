@@ -50,7 +50,7 @@ const login = async (req, res) => {
     id,
   };
   const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "23h" });
-  await User.findByIdAndUpdate(id, { token });
+  await User.findByIdAndUpdate(_id, { token });
 
   res.json({
     ResponseBody: {
@@ -73,7 +73,7 @@ const getCurrent = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  const { _id } = req.user;
+  const {_id} = req.user;
   await User.findByIdAndUpdate(_id, { token: "" });
 
   res.json({
@@ -82,8 +82,9 @@ const logout = async (req, res) => {
 };
 
 const updateAvatar = async (req, res) => {
+  const {_id} = req.user;
   const avatarsDir = path.join(process.cwd(), 'public', 'avatars');
-  const { _id } = req.user;
+  
 
   if (!req.file) {
     throw new Error('Avatar file is required');

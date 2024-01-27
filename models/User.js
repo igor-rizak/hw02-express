@@ -32,8 +32,6 @@ const userSchema = new Schema({
 
 }, { versionKey: false, timestamps: true });
 
-
-
 userSchema.post("save", handleSaveError);
 
 userSchema.pre("findOneAndUpdate", addUpdateSettings);
