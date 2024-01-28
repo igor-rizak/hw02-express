@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 import gravatar from "gravatar";
 import Jimp from "jimp";
 
-
 import User from "../models/User.js";
 
 import { HttpError } from "../helpers/index.js";
@@ -33,30 +32,25 @@ const register = async (req, res) => {
   });
 };
 
-const login = async(req, res)=> {
-    const {email, password} = req.body;
-    const user = await User.findOne({email});
-    if(!user) {
-        throw HttpError(401, "Email or password invalid");
-    }
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw HttpError(401, "Email or password invalid");
+  }
 
-    if(!user.verify) {
-        throw HttpError(401, "Email not verify");
-    }
+  const passwordCompare = await bcrypt.compare(password, user.password);
+  if (!passwordCompare) {
+    throw HttpError(401, "Email or password invalid");
+  }
 
-    const passwordCompare = await bcrypt.compare(password, user.password);
-    if(!passwordCompare) {
-        throw HttpError(401, "Email or password invalid");
-    }
+  const { _id: id } = user;
+  const payload = {
+    id,
+  };
 
-    const {_id: id} = user;
-    const payload = {
-        id
-    };
-
-    const token = jwt.sign(payload, JWT_SECRET, {expiresIn: "23h"});
-    await User.findByIdAndUpdate(id, {token});
-
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "23h" });
+  await User.findByIdAndUpdate(id, { token });
 
   res.json({
     ResponseBody: {
@@ -69,17 +63,17 @@ const login = async(req, res)=> {
   });
 };
 
-const getCurrent = async (req, res) => {
-  const { username, email } = req.user;
+const getCurrent = async(req, res)=> {
+    const {username, email} = req.user;
 
-  res.json({
-    username,
-    email,
-  });
-};
+    res.json({
+        username,
+        email,
+    })
+}
 
 const logout = async (req, res) => {
-  const {_id} = req.user;
+  const { _id } = req.user;
   await User.findByIdAndUpdate(_id, { token: "" });
 
   res.json({
@@ -88,15 +82,14 @@ const logout = async (req, res) => {
 };
 
 const updateAvatar = async (req, res) => {
-  const {_id} = req.user;
-  const avatarsDir = path.join(process.cwd(), 'public', 'avatars');
-  
+  const { _id } = req.user;
+  const avatarsDir = path.join(process.cwd(), "public", "avatars");
 
   if (!req.file) {
-    throw new Error('Avatar file is required');
+    throw new Error("Avatar file is required");
   }
 
-  const resize = async fileDir => {
+  const resize = async (fileDir) => {
     const image = await Jimp.read(fileDir);
     image
       .resize(250, Jimp.AUTO)
@@ -110,9 +103,9 @@ const updateAvatar = async (req, res) => {
   const resultURL = path.join(avatarsDir, filename);
 
   await fs.rename(tempURL, resultURL);
-  const avatarURL = path.join('avatars', filename);
-  console.log(avatarURL)
- 
+  const avatarURL = path.join("avatars", filename);
+  console.log(avatarURL);
+
   await User.findByIdAndUpdate(
     _id,
     { avatarURL, avatarImage: filename },
