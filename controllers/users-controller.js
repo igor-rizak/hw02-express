@@ -46,14 +46,14 @@ const register = async (req, res) => {
 };
 
 const verify = async(req, res)=> {
-    const {verificationCode} = req.params;
-  const user = await User.findOne({ verificationCode });
+    const {verificationToken} = req.params;
+  const user = await User.findOne({ verificationToken });
   console.log(user)
     if(!user) {
         throw HttpError(400, "Email not found or already verify");
     }
 
-    await User.findByIdAndUpdate(user._id, {verify: true, verificationCode: ""});
+    await User.findByIdAndUpdate(user._id, {verify: true, verificationToken: ""});
 
     res.json({
         message: "Email veify success"
